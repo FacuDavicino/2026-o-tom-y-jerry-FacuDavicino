@@ -1,9 +1,81 @@
-import example.pepita
+import example.*
+describe "Tests de la Casa de Tom y Jerry" {
 
-describe "group of tests for pepita" {
+    method initialize() {
+        casa.limpiarPorCompleto()
+        casa.ensuciar(150)
+        casa.asignarCuidador(tom)
+        casa.recibirInvasion(noQuilombero) 
+        
+        tom.energia(100)
+        mammy.paciencia(100)
+        jerry.peso(3)
+        patoQuacker.panico(0)
+        
+        pandilla.vaciar() 
+    }
 
-  test "pepita has initial energy" {
-    assert.equals(100, pepita.energy())
-  }
+    test "Al pasar el dia, Tom limpia la casa y gasta energia pero no atrapa a Jerry si es mas lento" {
+        casa.recibirInvasion(jerry) 
+        tom.energia(10)
 
+        casa.pasarElDia()
+
+        assert.equals(50, casa.suciedad())
+        assert.equals(0, tom.energia()) 
+
+        assert.equals(jerry, casa.quilombero()) 
+    }
+
+    test "Robocat limpia la casa por completo y siempre atrapa al quilombero" {
+        casa.asignarCuidador(robocat)
+        casa.recibirInvasion(tuffy)
+        
+        casa.pasarElDia()
+
+        assert.equals(0, casa.suciedad())
+
+        assert.equals(noQuilombero, casa.quilombero()) 
+    }
+
+    test "Tuffy interrumpe el sueno de Tom a la noche" {
+        casa.recibirInvasion(tuffy)
+
+        casa.pasarLaNoche()
+
+        assert.equals(130, tom.energia())
+    }
+
+    test "Si no hay quilombero, a la noche el cuidador duerme en paz (Magia del Polimorfismo)" {
+        casa.pasarLaNoche() 
+        
+        assert.equals(150, tom.energia()) 
+        assert.equals(150, casa.suciedad()) 
+    }
+
+    test "La pandilla hace un desastre y si son mas de 3 despiertan al cuidador" {
+        pandilla.agregarMiembro(jerry)
+        pandilla.agregarMiembro(tuffy)
+        pandilla.agregarMiembro(patoQuacker)
+        pandilla.agregarMiembro(jerry)
+
+        casa.recibirInvasion(pandilla)
+        casa.pasarLaNoche()
+
+        assert.equals(110, tom.energia())
+    }
+
+    test "Mammy atrapa a Quacker de dia si tiene suficiente paciencia" {
+        casa.asignarCuidador(mammy)
+        casa.recibirInvasion(patoQuacker)
+
+        casa.pasarElDia()
+
+
+        assert.equals(0, casa.suciedad()) 
+
+        assert.equals(85, mammy.paciencia()) 
+
+        assert.equals(noQuilombero, casa.quilombero()) 
+    }
 }
